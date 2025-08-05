@@ -3,6 +3,7 @@ package types
 import (
 	"crypto/sha256"
 
+	"github.com/pdrm26/blocker/crypto"
 	"github.com/pdrm26/blocker/proto"
 	pb "google.golang.org/protobuf/proto"
 )
@@ -16,4 +17,8 @@ func HashBlock(block *proto.Block) []byte {
 
 	hash := sha256.Sum256(b)
 	return hash[:]
+}
+
+func SignBlock(privKey *crypto.PrivateKey, block *proto.Block) *crypto.Signature {
+	return privKey.Sign(HashBlock(block))
 }
