@@ -149,15 +149,138 @@ func (x *Block) GetTransactions() []*Transaction {
 	return nil
 }
 
+type TxInput struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	PrevTxHash    []byte                 `protobuf:"bytes,1,opt,name=prevTxHash,proto3" json:"prevTxHash,omitempty"`
+	PrevOutIndex  uint32                 `protobuf:"varint,2,opt,name=prevOutIndex,proto3" json:"prevOutIndex,omitempty"`
+	PublicKey     []byte                 `protobuf:"bytes,3,opt,name=publicKey,proto3" json:"publicKey,omitempty"`
+	Signature     []byte                 `protobuf:"bytes,4,opt,name=signature,proto3" json:"signature,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *TxInput) Reset() {
+	*x = TxInput{}
+	mi := &file_proto_block_proto_msgTypes[2]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *TxInput) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TxInput) ProtoMessage() {}
+
+func (x *TxInput) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_block_proto_msgTypes[2]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use TxInput.ProtoReflect.Descriptor instead.
+func (*TxInput) Descriptor() ([]byte, []int) {
+	return file_proto_block_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *TxInput) GetPrevTxHash() []byte {
+	if x != nil {
+		return x.PrevTxHash
+	}
+	return nil
+}
+
+func (x *TxInput) GetPrevOutIndex() uint32 {
+	if x != nil {
+		return x.PrevOutIndex
+	}
+	return 0
+}
+
+func (x *TxInput) GetPublicKey() []byte {
+	if x != nil {
+		return x.PublicKey
+	}
+	return nil
+}
+
+func (x *TxInput) GetSignature() []byte {
+	if x != nil {
+		return x.Signature
+	}
+	return nil
+}
+
+type TxOutput struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Amount        int64                  `protobuf:"varint,1,opt,name=amount,proto3" json:"amount,omitempty"`
+	Address       []byte                 `protobuf:"bytes,2,opt,name=address,proto3" json:"address,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *TxOutput) Reset() {
+	*x = TxOutput{}
+	mi := &file_proto_block_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *TxOutput) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TxOutput) ProtoMessage() {}
+
+func (x *TxOutput) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_block_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use TxOutput.ProtoReflect.Descriptor instead.
+func (*TxOutput) Descriptor() ([]byte, []int) {
+	return file_proto_block_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *TxOutput) GetAmount() int64 {
+	if x != nil {
+		return x.Amount
+	}
+	return 0
+}
+
+func (x *TxOutput) GetAddress() []byte {
+	if x != nil {
+		return x.Address
+	}
+	return nil
+}
+
 type Transaction struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
+	Version       int32                  `protobuf:"varint,1,opt,name=version,proto3" json:"version,omitempty"`
+	Inputs        []*TxInput             `protobuf:"bytes,2,rep,name=inputs,proto3" json:"inputs,omitempty"`
+	Outputs       []*TxOutput            `protobuf:"bytes,3,rep,name=outputs,proto3" json:"outputs,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *Transaction) Reset() {
 	*x = Transaction{}
-	mi := &file_proto_block_proto_msgTypes[2]
+	mi := &file_proto_block_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -169,7 +292,7 @@ func (x *Transaction) String() string {
 func (*Transaction) ProtoMessage() {}
 
 func (x *Transaction) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_block_proto_msgTypes[2]
+	mi := &file_proto_block_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -182,7 +305,28 @@ func (x *Transaction) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Transaction.ProtoReflect.Descriptor instead.
 func (*Transaction) Descriptor() ([]byte, []int) {
-	return file_proto_block_proto_rawDescGZIP(), []int{2}
+	return file_proto_block_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *Transaction) GetVersion() int32 {
+	if x != nil {
+		return x.Version
+	}
+	return 0
+}
+
+func (x *Transaction) GetInputs() []*TxInput {
+	if x != nil {
+		return x.Inputs
+	}
+	return nil
+}
+
+func (x *Transaction) GetOutputs() []*TxOutput {
+	if x != nil {
+		return x.Outputs
+	}
+	return nil
 }
 
 var File_proto_block_proto protoreflect.FileDescriptor
@@ -198,8 +342,21 @@ const file_proto_block_proto_rawDesc = "" +
 	"\ttimestamp\x18\x05 \x01(\x03R\ttimestamp\"Z\n" +
 	"\x05Block\x12\x1f\n" +
 	"\x06header\x18\x01 \x01(\v2\a.HeaderR\x06header\x120\n" +
-	"\ftransactions\x18\x02 \x03(\v2\f.TransactionR\ftransactions\"\r\n" +
-	"\vTransactionB!Z\x1fgithub.com/pdrm26/blocker/protob\x06proto3"
+	"\ftransactions\x18\x02 \x03(\v2\f.TransactionR\ftransactions\"\x89\x01\n" +
+	"\aTxInput\x12\x1e\n" +
+	"\n" +
+	"prevTxHash\x18\x01 \x01(\fR\n" +
+	"prevTxHash\x12\"\n" +
+	"\fprevOutIndex\x18\x02 \x01(\rR\fprevOutIndex\x12\x1c\n" +
+	"\tpublicKey\x18\x03 \x01(\fR\tpublicKey\x12\x1c\n" +
+	"\tsignature\x18\x04 \x01(\fR\tsignature\"<\n" +
+	"\bTxOutput\x12\x16\n" +
+	"\x06amount\x18\x01 \x01(\x03R\x06amount\x12\x18\n" +
+	"\aaddress\x18\x02 \x01(\fR\aaddress\"n\n" +
+	"\vTransaction\x12\x18\n" +
+	"\aversion\x18\x01 \x01(\x05R\aversion\x12 \n" +
+	"\x06inputs\x18\x02 \x03(\v2\b.TxInputR\x06inputs\x12#\n" +
+	"\aoutputs\x18\x03 \x03(\v2\t.TxOutputR\aoutputsB!Z\x1fgithub.com/pdrm26/blocker/protob\x06proto3"
 
 var (
 	file_proto_block_proto_rawDescOnce sync.Once
@@ -213,20 +370,24 @@ func file_proto_block_proto_rawDescGZIP() []byte {
 	return file_proto_block_proto_rawDescData
 }
 
-var file_proto_block_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
+var file_proto_block_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
 var file_proto_block_proto_goTypes = []any{
 	(*Header)(nil),      // 0: Header
 	(*Block)(nil),       // 1: Block
-	(*Transaction)(nil), // 2: Transaction
+	(*TxInput)(nil),     // 2: TxInput
+	(*TxOutput)(nil),    // 3: TxOutput
+	(*Transaction)(nil), // 4: Transaction
 }
 var file_proto_block_proto_depIdxs = []int32{
 	0, // 0: Block.header:type_name -> Header
-	2, // 1: Block.transactions:type_name -> Transaction
-	2, // [2:2] is the sub-list for method output_type
-	2, // [2:2] is the sub-list for method input_type
-	2, // [2:2] is the sub-list for extension type_name
-	2, // [2:2] is the sub-list for extension extendee
-	0, // [0:2] is the sub-list for field type_name
+	4, // 1: Block.transactions:type_name -> Transaction
+	2, // 2: Transaction.inputs:type_name -> TxInput
+	3, // 3: Transaction.outputs:type_name -> TxOutput
+	4, // [4:4] is the sub-list for method output_type
+	4, // [4:4] is the sub-list for method input_type
+	4, // [4:4] is the sub-list for extension type_name
+	4, // [4:4] is the sub-list for extension extendee
+	0, // [0:4] is the sub-list for field type_name
 }
 
 func init() { file_proto_block_proto_init() }
@@ -240,7 +401,7 @@ func file_proto_block_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_block_proto_rawDesc), len(file_proto_block_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   3,
+			NumMessages:   5,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
