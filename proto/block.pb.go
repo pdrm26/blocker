@@ -9,6 +9,7 @@ package proto
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	reflect "reflect"
 	sync "sync"
 	unsafe "unsafe"
@@ -333,7 +334,7 @@ var File_proto_block_proto protoreflect.FileDescriptor
 
 const file_proto_block_proto_rawDesc = "" +
 	"\n" +
-	"\x11proto/block.proto\"\x90\x01\n" +
+	"\x11proto/block.proto\x1a\x1bgoogle/protobuf/empty.proto\"\x90\x01\n" +
 	"\x06Header\x12\x18\n" +
 	"\aversion\x18\x01 \x01(\x05R\aversion\x12\x16\n" +
 	"\x06height\x18\x02 \x01(\x05R\x06height\x12\x1a\n" +
@@ -356,7 +357,9 @@ const file_proto_block_proto_rawDesc = "" +
 	"\vTransaction\x12\x18\n" +
 	"\aversion\x18\x01 \x01(\x05R\aversion\x12 \n" +
 	"\x06inputs\x18\x02 \x03(\v2\b.TxInputR\x06inputs\x12#\n" +
-	"\aoutputs\x18\x03 \x03(\v2\t.TxOutputR\aoutputsB!Z\x1fgithub.com/pdrm26/blocker/protob\x06proto3"
+	"\aoutputs\x18\x03 \x03(\v2\t.TxOutputR\aoutputs2A\n" +
+	"\x04Node\x129\n" +
+	"\x11HandleTransaction\x12\f.Transaction\x1a\x16.google.protobuf.EmptyB!Z\x1fgithub.com/pdrm26/blocker/protob\x06proto3"
 
 var (
 	file_proto_block_proto_rawDescOnce sync.Once
@@ -372,19 +375,22 @@ func file_proto_block_proto_rawDescGZIP() []byte {
 
 var file_proto_block_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
 var file_proto_block_proto_goTypes = []any{
-	(*Header)(nil),      // 0: Header
-	(*Block)(nil),       // 1: Block
-	(*TxInput)(nil),     // 2: TxInput
-	(*TxOutput)(nil),    // 3: TxOutput
-	(*Transaction)(nil), // 4: Transaction
+	(*Header)(nil),        // 0: Header
+	(*Block)(nil),         // 1: Block
+	(*TxInput)(nil),       // 2: TxInput
+	(*TxOutput)(nil),      // 3: TxOutput
+	(*Transaction)(nil),   // 4: Transaction
+	(*emptypb.Empty)(nil), // 5: google.protobuf.Empty
 }
 var file_proto_block_proto_depIdxs = []int32{
 	0, // 0: Block.header:type_name -> Header
 	4, // 1: Block.transactions:type_name -> Transaction
 	2, // 2: Transaction.inputs:type_name -> TxInput
 	3, // 3: Transaction.outputs:type_name -> TxOutput
-	4, // [4:4] is the sub-list for method output_type
-	4, // [4:4] is the sub-list for method input_type
+	4, // 4: Node.HandleTransaction:input_type -> Transaction
+	5, // 5: Node.HandleTransaction:output_type -> google.protobuf.Empty
+	5, // [5:6] is the sub-list for method output_type
+	4, // [4:5] is the sub-list for method input_type
 	4, // [4:4] is the sub-list for extension type_name
 	4, // [4:4] is the sub-list for extension extendee
 	0, // [0:4] is the sub-list for field type_name
@@ -403,7 +409,7 @@ func file_proto_block_proto_init() {
 			NumEnums:      0,
 			NumMessages:   5,
 			NumExtensions: 0,
-			NumServices:   0,
+			NumServices:   1,
 		},
 		GoTypes:           file_proto_block_proto_goTypes,
 		DependencyIndexes: file_proto_block_proto_depIdxs,

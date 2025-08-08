@@ -1,6 +1,12 @@
 syntax = "proto3";
 
+import "google/protobuf/empty.proto";
+
 option go_package = "github.com/pdrm26/blocker/proto";
+
+service Node {
+    rpc HandleTransaction(Transaction) returns (google.protobuf.Empty);
+}
 
 message Header {
     int32 version = 1;
