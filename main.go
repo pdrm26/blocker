@@ -22,5 +22,4 @@ func main() {
 
 	proto.RegisterNodeServer(grpcServer, node)
 	grpcServer.Serve(ln)
-
 }
