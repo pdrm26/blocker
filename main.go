@@ -47,6 +47,7 @@ func makeTx() {
 	defer conn.Close()
 
 	client := proto.NewNodeClient(conn)
+	client.ExchangeNodeInfo(context.TODO(), &proto.PeerInfo{ProtocolVersion: 1, BlockHeight: 10})
 	_, err = client.HandleTransaction(context.TODO(), &proto.Transaction{})
 	if err != nil {
 		log.Fatal("HandleTransaction failed:", err)
