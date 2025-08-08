@@ -43,10 +43,12 @@ func (n *Node) ExchangeNodeInfo(ctx context.Context, incomingPeerInfo *proto.Pee
 }
 
 func (n *Node) HandleTransaction(ctx context.Context, tx *proto.Transaction) (*emptypb.Empty, error) {
-	peer, ok := peer.FromContext(ctx)
+	remotePeer, ok := peer.FromContext(ctx)
 	if !ok {
 		fmt.Println("Peer not found in context")
 	}
-	fmt.Println("Received transaction ::", peer)
-	return nil, nil
+
+	fmt.Printf("Received transaction from %+v :: incomingTx: %+v\n", remotePeer, tx)
+
+	return &emptypb.Empty{}, nil
 }
