@@ -7,7 +7,7 @@ build:
 	@go build -o bin/blocker
 
 run: build
-	./bin/blocker
+	@./bin/blocker
 
 proto:
 	@protoc --go_out=. --go_opt=paths=source_relative \
