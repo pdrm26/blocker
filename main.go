@@ -27,6 +27,7 @@ func makeTx() {
 	}
 	client.ExchangeNodeInfo(
 		context.TODO(),
+		//TODO: ListenAddr is incorrect i think because at the end it goes to targetAddr!!! check it later
 		&proto.PeerInfo{ProtocolVersion: 1, BlockHeight: 10, ListenAddr: ":4000"},
 	)
 	_, err = client.HandleTransaction(context.TODO(), &proto.Transaction{})
