@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"log"
-	"net"
 	"time"
 
 	"github.com/pdrm26/blocker/node"
@@ -15,25 +14,12 @@ import (
 func main() {
 	node := node.NewNode()
 
-	opts := []grpc.ServerOption{}
-	grpcServer := grpc.NewServer(opts...)
-
-	ln, err := net.Listen("tcp", ":3000")
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	proto.RegisterNodeServer(grpcServer, node)
-
 	go func() {
 		time.Sleep(2 * time.Second)
 		makeTx()
 	}()
 
-	log.Println("gRPC server listening on :3000")
-	if err := grpcServer.Serve(ln); err != nil {
-		log.Fatal(err)
-	}
+	log.Fatal(node.Start(":3000"))
 }
 
 func makeTx() {
