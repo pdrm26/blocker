@@ -89,8 +89,8 @@ func (n *Node) HandleTransaction(ctx context.Context, tx *proto.Transaction) (*e
 	return &emptypb.Empty{}, nil
 }
 
-func MakeNodeClient(listenAddr string) (proto.NodeClient, error) {
-	conn, err := grpc.NewClient(listenAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
+func MakeNodeClient(targetAddr string) (proto.NodeClient, error) {
+	conn, err := grpc.NewClient(targetAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		return nil, err
 	}
