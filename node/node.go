@@ -8,6 +8,7 @@ import (
 
 	"github.com/pdrm26/blocker/proto"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/peer"
 	"google.golang.org/protobuf/types/known/emptypb"
 )
@@ -69,4 +70,15 @@ func (n *Node) HandleTransaction(ctx context.Context, tx *proto.Transaction) (*e
 	fmt.Printf("Received transaction from %+v :: incomingTx: %+v\n", remotePeer, tx)
 
 	return &emptypb.Empty{}, nil
+}
+
+func MakeNodeClient(listenAddr string) (proto.NodeClient, error) {
+	conn, err := grpc.NewClient(listenAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		return nil, err
+	}
+
+	client := proto.NewNodeClient(conn)
+
+	return client, nil
 }
