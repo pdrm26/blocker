@@ -12,6 +12,7 @@ service Node {
 message PeerInfo {
     int32 protocolVersion = 1;
     int32 blockHeight = 2;
+    string listenAddr = 3;
 }
 
 message Header {
