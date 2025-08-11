@@ -78,7 +78,7 @@ func (n *Node) addPeer(p proto.NodeClient, peerInfo *proto.PeerInfo) {
 	n.peerLock.Lock()
 	defer n.peerLock.Unlock()
 
-	fmt.Printf("new peer connected (%s) - height (%d)\n", peerInfo.ListenAddr, peerInfo.BlockHeight)
+	fmt.Printf("[%s] new peer connected (%s) - height (%d)\n", n.listenAddr, peerInfo.ListenAddr, peerInfo.BlockHeight)
 
 	n.peers[p] = peerInfo
 }
