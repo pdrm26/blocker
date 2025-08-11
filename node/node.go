@@ -15,7 +15,8 @@ import (
 )
 
 type Node struct {
-	version int32
+	version    int32
+	listenAddr string
 
 	peerLock sync.RWMutex
 	peers    map[proto.NodeClient]*proto.PeerInfo
@@ -31,6 +32,7 @@ func NewNode() *Node {
 }
 
 func (n *Node) Start(listenAddr string) error {
+	n.listenAddr = listenAddr
 	opts := []grpc.ServerOption{}
 	grpcServer := grpc.NewServer(opts...)
 
@@ -43,6 +45,33 @@ func (n *Node) Start(listenAddr string) error {
 
 	log.Println("gRPC server listening on", listenAddr)
 	return grpcServer.Serve(ln)
+}
+
+func (n *Node) BootstrapNetwork(addrs []string) error {
+	for _, addr := range addrs {
+		client, err := MakeNodeClient(addr)
+		if err != nil {
+			return err
+		}
+
+		peerInfo, err := client.Handshake(context.Background(), n.getPeerInfo())
+		if err != nil {
+			fmt.Println("handshake error", err)
+			continue
+		}
+
+		n.addPeer(client, peerInfo)
+	}
+
+	return nil
+}
+
+func (n *Node) getPeerInfo() *proto.PeerInfo {
+	return &proto.PeerInfo{
+		ProtocolVersion: 1,
+		BlockHeight:     0,
+		ListenAddr:      n.listenAddr,
+	}
 }
 
 func (n *Node) addPeer(p proto.NodeClient, peerInfo *proto.PeerInfo) {
@@ -62,11 +91,6 @@ func (n *Node) removePeer(p proto.NodeClient) {
 }
 
 func (n *Node) Handshake(ctx context.Context, incomingPeerInfo *proto.PeerInfo) (*proto.PeerInfo, error) {
-	localPeerInfo := &proto.PeerInfo{
-		ProtocolVersion: n.version,
-		BlockHeight:     1000,
-	}
-
 	client, err := MakeNodeClient(incomingPeerInfo.ListenAddr)
 	if err != nil {
 		return nil, err
@@ -74,7 +98,7 @@ func (n *Node) Handshake(ctx context.Context, incomingPeerInfo *proto.PeerInfo) 
 
 	n.addPeer(client, incomingPeerInfo)
 
-	return localPeerInfo, nil
+	return n.getPeerInfo(), nil
 
 }
 
