@@ -61,7 +61,7 @@ func (n *Node) removePeer(p proto.NodeClient) {
 	delete(n.peers, p)
 }
 
-func (n *Node) ExchangeNodeInfo(ctx context.Context, incomingPeerInfo *proto.PeerInfo) (*proto.PeerInfo, error) {
+func (n *Node) Handshake(ctx context.Context, incomingPeerInfo *proto.PeerInfo) (*proto.PeerInfo, error) {
 	localPeerInfo := &proto.PeerInfo{
 		ProtocolVersion: n.version,
 		BlockHeight:     1000,
@@ -95,7 +95,5 @@ func MakeNodeClient(targetAddr string) (proto.NodeClient, error) {
 		return nil, err
 	}
 
-	client := proto.NewNodeClient(conn)
-
-	return client, nil
+	return proto.NewNodeClient(conn), nil
 }

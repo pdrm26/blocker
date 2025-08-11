@@ -20,7 +20,7 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	Node_ExchangeNodeInfo_FullMethodName  = "/Node/ExchangeNodeInfo"
+	Node_Handshake_FullMethodName         = "/Node/Handshake"
 	Node_HandleTransaction_FullMethodName = "/Node/HandleTransaction"
 )
 
@@ -28,7 +28,7 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type NodeClient interface {
-	ExchangeNodeInfo(ctx context.Context, in *PeerInfo, opts ...grpc.CallOption) (*PeerInfo, error)
+	Handshake(ctx context.Context, in *PeerInfo, opts ...grpc.CallOption) (*PeerInfo, error)
 	HandleTransaction(ctx context.Context, in *Transaction, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
@@ -40,10 +40,10 @@ func NewNodeClient(cc grpc.ClientConnInterface) NodeClient {
 	return &nodeClient{cc}
 }
 
-func (c *nodeClient) ExchangeNodeInfo(ctx context.Context, in *PeerInfo, opts ...grpc.CallOption) (*PeerInfo, error) {
+func (c *nodeClient) Handshake(ctx context.Context, in *PeerInfo, opts ...grpc.CallOption) (*PeerInfo, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(PeerInfo)
-	err := c.cc.Invoke(ctx, Node_ExchangeNodeInfo_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, Node_Handshake_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -64,7 +64,7 @@ func (c *nodeClient) HandleTransaction(ctx context.Context, in *Transaction, opt
 // All implementations must embed UnimplementedNodeServer
 // for forward compatibility.
 type NodeServer interface {
-	ExchangeNodeInfo(context.Context, *PeerInfo) (*PeerInfo, error)
+	Handshake(context.Context, *PeerInfo) (*PeerInfo, error)
 	HandleTransaction(context.Context, *Transaction) (*emptypb.Empty, error)
 	mustEmbedUnimplementedNodeServer()
 }
@@ -76,8 +76,8 @@ type NodeServer interface {
 // pointer dereference when methods are called.
 type UnimplementedNodeServer struct{}
 
-func (UnimplementedNodeServer) ExchangeNodeInfo(context.Context, *PeerInfo) (*PeerInfo, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ExchangeNodeInfo not implemented")
+func (UnimplementedNodeServer) Handshake(context.Context, *PeerInfo) (*PeerInfo, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Handshake not implemented")
 }
 func (UnimplementedNodeServer) HandleTransaction(context.Context, *Transaction) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method HandleTransaction not implemented")
@@ -103,20 +103,20 @@ func RegisterNodeServer(s grpc.ServiceRegistrar, srv NodeServer) {
 	s.RegisterService(&Node_ServiceDesc, srv)
 }
 
-func _Node_ExchangeNodeInfo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Node_Handshake_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(PeerInfo)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(NodeServer).ExchangeNodeInfo(ctx, in)
+		return srv.(NodeServer).Handshake(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Node_ExchangeNodeInfo_FullMethodName,
+		FullMethod: Node_Handshake_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(NodeServer).ExchangeNodeInfo(ctx, req.(*PeerInfo))
+		return srv.(NodeServer).Handshake(ctx, req.(*PeerInfo))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -147,8 +147,8 @@ var Node_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*NodeServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "ExchangeNodeInfo",
-			Handler:    _Node_ExchangeNodeInfo_Handler,
+			MethodName: "Handshake",
+			Handler:    _Node_Handshake_Handler,
 		},
 		{
 			MethodName: "HandleTransaction",

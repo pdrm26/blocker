@@ -5,7 +5,7 @@ import "google/protobuf/empty.proto";
 option go_package = "github.com/pdrm26/blocker/proto";
 
 service Node {
-    rpc ExchangeNodeInfo(PeerInfo) returns (PeerInfo);
+    rpc Handshake(PeerInfo) returns (PeerInfo);
     rpc HandleTransaction(Transaction) returns (google.protobuf.Empty);
 }
 

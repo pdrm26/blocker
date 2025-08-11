@@ -423,9 +423,9 @@ const file_proto_block_proto_rawDesc = "" +
 	"\vTransaction\x12\x18\n" +
 	"\aversion\x18\x01 \x01(\x05R\aversion\x12 \n" +
 	"\x06inputs\x18\x02 \x03(\v2\b.TxInputR\x06inputs\x12#\n" +
-	"\aoutputs\x18\x03 \x03(\v2\t.TxOutputR\aoutputs2k\n" +
-	"\x04Node\x12(\n" +
-	"\x10ExchangeNodeInfo\x12\t.PeerInfo\x1a\t.PeerInfo\x129\n" +
+	"\aoutputs\x18\x03 \x03(\v2\t.TxOutputR\aoutputs2d\n" +
+	"\x04Node\x12!\n" +
+	"\tHandshake\x12\t.PeerInfo\x1a\t.PeerInfo\x129\n" +
 	"\x11HandleTransaction\x12\f.Transaction\x1a\x16.google.protobuf.EmptyB!Z\x1fgithub.com/pdrm26/blocker/protob\x06proto3"
 
 var (
@@ -455,9 +455,9 @@ var file_proto_block_proto_depIdxs = []int32{
 	5, // 1: Block.transactions:type_name -> Transaction
 	3, // 2: Transaction.inputs:type_name -> TxInput
 	4, // 3: Transaction.outputs:type_name -> TxOutput
-	0, // 4: Node.ExchangeNodeInfo:input_type -> PeerInfo
+	0, // 4: Node.Handshake:input_type -> PeerInfo
 	5, // 5: Node.HandleTransaction:input_type -> Transaction
-	0, // 6: Node.ExchangeNodeInfo:output_type -> PeerInfo
+	0, // 6: Node.Handshake:output_type -> PeerInfo
 	6, // 7: Node.HandleTransaction:output_type -> google.protobuf.Empty
 	6, // [6:8] is the sub-list for method output_type
 	4, // [4:6] is the sub-list for method input_type
