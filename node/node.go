@@ -3,11 +3,11 @@ package node
 import (
 	"context"
 	"fmt"
-	"log"
 	"net"
 	"sync"
 
 	"github.com/pdrm26/blocker/proto"
+	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/peer"
@@ -17,6 +17,7 @@ import (
 type Node struct {
 	version    int32
 	listenAddr string
+	logger     *zap.SugaredLogger
 
 	peerLock sync.RWMutex
 	peers    map[proto.NodeClient]*proto.PeerInfo
@@ -25,9 +26,11 @@ type Node struct {
 }
 
 func NewNode() *Node {
+	logger, _ := zap.NewProduction()
 	return &Node{
 		peers:   make(map[proto.NodeClient]*proto.PeerInfo),
 		version: 531,
+		logger:  logger.Sugar(),
 	}
 }
 
@@ -43,7 +46,7 @@ func (n *Node) Start(listenAddr string) error {
 
 	proto.RegisterNodeServer(grpcServer, n)
 
-	log.Println("gRPC server listening on", listenAddr)
+	n.logger.Info("node running on port", listenAddr)
 	return grpcServer.Serve(ln)
 }
 
@@ -56,7 +59,7 @@ func (n *Node) BootstrapNetwork(addrs []string) error {
 
 		peerInfo, err := client.Handshake(context.Background(), n.getPeerInfo())
 		if err != nil {
-			fmt.Println("handshake error", err)
+			n.logger.Error("handshake error", err)
 			continue
 		}
 
@@ -78,7 +81,7 @@ func (n *Node) addPeer(p proto.NodeClient, peerInfo *proto.PeerInfo) {
 	n.peerLock.Lock()
 	defer n.peerLock.Unlock()
 
-	fmt.Printf("[%s] new peer connected (%s) - height (%d)\n", n.listenAddr, peerInfo.ListenAddr, peerInfo.BlockHeight)
+	n.logger.Infof("[%s] new peer connected (%s) - height (%d)\n", n.listenAddr, peerInfo.ListenAddr, peerInfo.BlockHeight)
 
 	n.peers[p] = peerInfo
 }
@@ -108,7 +111,7 @@ func (n *Node) HandleTransaction(ctx context.Context, tx *proto.Transaction) (*e
 		fmt.Println("Peer not found in context")
 	}
 
-	fmt.Printf("Received transaction from %+v :: incomingTx: %+v\n", remotePeer, tx)
+	n.logger.Infof("Received transaction from %+v :: incomingTx: %+v\n", remotePeer, tx)
 
 	return &emptypb.Empty{}, nil
 }
