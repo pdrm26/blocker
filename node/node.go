@@ -53,8 +53,25 @@ func (n *Node) Start(listenAddr string, bootstrapNodes []string) error {
 	return grpcServer.Serve(ln)
 }
 
+func (n *Node) canConnectWith(addr string) bool {
+	if n.listenAddr == addr {
+		return false
+	}
+
+	for _, address := range n.getPeerList() {
+		if addr == address {
+			return false
+		}
+	}
+
+	return true
+}
+
 func (n *Node) bootstrapNetwork(addrs []string) error {
 	for _, addr := range addrs {
+		if !n.canConnectWith(addr) {
+			continue
+		}
 		client, peer, err := n.dialRemoteNode(addr)
 		if err != nil {
 			return err
@@ -106,10 +123,8 @@ func (n *Node) addPeer(p proto.NodeClient, peerInfo *proto.PeerInfo) {
 
 	n.peers[p] = peerInfo
 
-	for _, addr := range peerInfo.PeerList {
-		if addr != n.listenAddr {
-			fmt.Printf("[%s] want to connect to -> %s\n", n.listenAddr, addr)
-		}
+	if len(peerInfo.PeerList) > 0 {
+		go n.bootstrapNetwork(peerInfo.PeerList)
 	}
 
 	n.logger.Debugw(
@@ -145,8 +160,7 @@ func (n *Node) HandleTransaction(ctx context.Context, tx *proto.Transaction) (*e
 		fmt.Println("Peer not found in context")
 	}
 
-	n.logger.Infof("Received transaction from %+v :: incomingTx: %+v\n", remotePeer, tx)
-
+	n.logger.Infof("Received tx from %+v :: incomingTx: %+v\n", remotePeer, tx)
 	return &emptypb.Empty{}, nil
 }
 
