@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"log"
+	"time"
 
 	"github.com/pdrm26/blocker/node"
 	"github.com/pdrm26/blocker/proto"
@@ -10,14 +11,13 @@ import (
 
 func main() {
 	makeNode(":3000", []string{})
+	time.Sleep(time.Second)
 	makeNode(":4000", []string{":3000"})
+	time.Sleep(time.Second)
+	makeNode(":5000", []string{":4000"})
+	time.Sleep(time.Second)
 
 	select {}
-
-	// go func() {
-	// 	time.Sleep(2 * time.Second)
-	// 	makeTx()
-	// }()
 }
 
 func makeNode(listenAddr string, bootstrapNodes []string) *node.Node {

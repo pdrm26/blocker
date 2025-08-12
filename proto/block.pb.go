@@ -27,6 +27,7 @@ type PeerInfo struct {
 	ProtocolVersion int32                  `protobuf:"varint,1,opt,name=protocolVersion,proto3" json:"protocolVersion,omitempty"`
 	BlockHeight     int32                  `protobuf:"varint,2,opt,name=blockHeight,proto3" json:"blockHeight,omitempty"`
 	ListenAddr      string                 `protobuf:"bytes,3,opt,name=listenAddr,proto3" json:"listenAddr,omitempty"`
+	PeerList        []string               `protobuf:"bytes,4,rep,name=peerList,proto3" json:"peerList,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -80,6 +81,13 @@ func (x *PeerInfo) GetListenAddr() string {
 		return x.ListenAddr
 	}
 	return ""
+}
+
+func (x *PeerInfo) GetPeerList() []string {
+	if x != nil {
+		return x.PeerList
+	}
+	return nil
 }
 
 type Header struct {
@@ -394,13 +402,14 @@ var File_proto_block_proto protoreflect.FileDescriptor
 
 const file_proto_block_proto_rawDesc = "" +
 	"\n" +
-	"\x11proto/block.proto\x1a\x1bgoogle/protobuf/empty.proto\"v\n" +
+	"\x11proto/block.proto\x1a\x1bgoogle/protobuf/empty.proto\"\x92\x01\n" +
 	"\bPeerInfo\x12(\n" +
 	"\x0fprotocolVersion\x18\x01 \x01(\x05R\x0fprotocolVersion\x12 \n" +
 	"\vblockHeight\x18\x02 \x01(\x05R\vblockHeight\x12\x1e\n" +
 	"\n" +
 	"listenAddr\x18\x03 \x01(\tR\n" +
-	"listenAddr\"\x90\x01\n" +
+	"listenAddr\x12\x1a\n" +
+	"\bpeerList\x18\x04 \x03(\tR\bpeerList\"\x90\x01\n" +
 	"\x06Header\x12\x18\n" +
 	"\aversion\x18\x01 \x01(\x05R\aversion\x12\x16\n" +
 	"\x06height\x18\x02 \x01(\x05R\x06height\x12\x1a\n" +

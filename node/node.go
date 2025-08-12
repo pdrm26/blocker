@@ -74,16 +74,40 @@ func (n *Node) getPeerInfo() *proto.PeerInfo {
 		ProtocolVersion: 1,
 		BlockHeight:     0,
 		ListenAddr:      n.listenAddr,
+		PeerList:        n.getPeerList(),
 	}
+}
+
+func (n *Node) getPeerList() []string {
+	n.peerLock.RLock()
+	defer n.peerLock.RUnlock()
+
+	peers := []string{}
+	for _, peer := range n.peers {
+		peers = append(peers, peer.ListenAddr)
+	}
+
+	return peers
 }
 
 func (n *Node) addPeer(p proto.NodeClient, peerInfo *proto.PeerInfo) {
 	n.peerLock.Lock()
 	defer n.peerLock.Unlock()
 
-	n.logger.Infof("[%s] new peer connected (%s) - height (%d)\n", n.listenAddr, peerInfo.ListenAddr, peerInfo.BlockHeight)
-
 	n.peers[p] = peerInfo
+
+	for _, addr := range peerInfo.PeerList {
+		if addr != n.listenAddr {
+			fmt.Printf("I [%s] want to connect to -> %s\n", n.listenAddr, addr)
+		}
+	}
+
+	n.logger.Debugw(
+		"new peer successfully connected",
+		n.listenAddr,
+		peerInfo.ListenAddr,
+		peerInfo.BlockHeight,
+	)
 }
 
 func (n *Node) removePeer(p proto.NodeClient) {
