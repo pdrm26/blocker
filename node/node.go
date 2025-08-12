@@ -34,7 +34,7 @@ func NewNode() *Node {
 	}
 }
 
-func (n *Node) Start(listenAddr string) error {
+func (n *Node) Start(listenAddr string, bootstrapNodes []string) error {
 	n.listenAddr = listenAddr
 	opts := []grpc.ServerOption{}
 	grpcServer := grpc.NewServer(opts...)
@@ -47,10 +47,13 @@ func (n *Node) Start(listenAddr string) error {
 	proto.RegisterNodeServer(grpcServer, n)
 
 	n.logger.Info("node running on port", listenAddr)
+	if len(bootstrapNodes) > 0 {
+		go n.bootstrapNetwork(bootstrapNodes)
+	}
 	return grpcServer.Serve(ln)
 }
 
-func (n *Node) BootstrapNetwork(addrs []string) error {
+func (n *Node) bootstrapNetwork(addrs []string) error {
 	for _, addr := range addrs {
 		client, err := MakeNodeClient(addr)
 		if err != nil {
@@ -98,7 +101,7 @@ func (n *Node) addPeer(p proto.NodeClient, peerInfo *proto.PeerInfo) {
 
 	for _, addr := range peerInfo.PeerList {
 		if addr != n.listenAddr {
-			fmt.Printf("I [%s] want to connect to -> %s\n", n.listenAddr, addr)
+			fmt.Printf("[%s] want to connect to -> %s\n", n.listenAddr, addr)
 		}
 	}
 
