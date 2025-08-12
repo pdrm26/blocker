@@ -55,21 +55,28 @@ func (n *Node) Start(listenAddr string, bootstrapNodes []string) error {
 
 func (n *Node) bootstrapNetwork(addrs []string) error {
 	for _, addr := range addrs {
-		client, err := MakeNodeClient(addr)
+		client, peer, err := n.dialRemoteNode(addr)
 		if err != nil {
 			return err
 		}
-
-		peerInfo, err := client.Handshake(context.Background(), n.getPeerInfo())
-		if err != nil {
-			n.logger.Error("handshake error", err)
-			continue
-		}
-
-		n.addPeer(client, peerInfo)
+		n.addPeer(client, peer)
 	}
 
 	return nil
+}
+
+func (n *Node) dialRemoteNode(addr string) (proto.NodeClient, *proto.PeerInfo, error) {
+	client, err := MakeNodeClient(addr)
+	if err != nil {
+		return nil, nil, err
+	}
+	peer, err := client.Handshake(context.Background(), n.getPeerInfo())
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return client, peer, nil
+
 }
 
 func (n *Node) getPeerInfo() *proto.PeerInfo {
