@@ -2,15 +2,19 @@ package types
 
 import (
 	"crypto/sha256"
+	"encoding/json"
 
 	"github.com/pdrm26/blocker/crypto"
 	"github.com/pdrm26/blocker/proto"
-	pb "google.golang.org/protobuf/proto"
 )
 
 // HashBlock returns a SHA256 of the block header.
 func HashBlock(block *proto.Block) []byte {
-	b, err := pb.Marshal(block)
+	return HashHeader(block.Header)
+}
+
+func HashHeader(header *proto.Header) []byte {
+	b, err := json.Marshal(header)
 	if err != nil {
 		panic(err)
 	}
