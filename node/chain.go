@@ -2,8 +2,10 @@ package node
 
 import (
 	"encoding/hex"
+	"fmt"
 
 	"github.com/pdrm26/blocker/proto"
+	"github.com/pdrm26/blocker/types"
 )
 
 type HeaderList struct {
@@ -18,6 +20,13 @@ func NewHeaderList() *HeaderList {
 
 func (h *HeaderList) Add(header *proto.Header) {
 	h.headers = append(h.headers, header)
+}
+
+func (h *HeaderList) Get(height int) *proto.Header {
+	if height > h.Height() {
+		panic("height is too high!")
+	}
+	return h.headers[height]
 }
 
 func (h *HeaderList) Len() int {
@@ -55,5 +64,11 @@ func (c *Chain) GetBlockByHash(hash []byte) (*proto.Block, error) {
 }
 
 func (c *Chain) GetBlockByHeight(height int) (*proto.Block, error) {
-	return nil, nil
+	if height > c.Height() {
+		return nil, fmt.Errorf("given height (%d) too heigh - height (%d)", height, c.Height())
+	}
+
+	header := c.headers.Get(height)
+	headerHash := types.HashHeader(header)
+	return c.GetBlockByHash(headerHash)
 }
