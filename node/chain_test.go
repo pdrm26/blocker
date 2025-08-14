@@ -14,7 +14,12 @@ func TestAddBlock(t *testing.T) {
 	blockHash := types.HashBlock(block)
 
 	assert.Nil(t, chain.AddBlock(block))
-	fetchedBlock, err := chain.GetBlockByHash(blockHash)
+
+	fetchedBlockByHash, err := chain.GetBlockByHash(blockHash)
+	assert.Nil(t, err)
+	assert.Equal(t, fetchedBlockByHash, block)
+
+	fetchedBlockByHeight, err := chain.GetBlockByHeight(0)
 	assert.Nil(t, err)
 	assert.Equal(t, fetchedBlockByHeight, block)
 }
