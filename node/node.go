@@ -191,7 +191,7 @@ func (n *Node) HandleTransaction(ctx context.Context, tx *proto.Transaction) (*e
 
 	if n.mempool.Add(tx) {
 		hash := hex.EncodeToString(types.HashTransaction(tx))
-		n.logger.Infow("received tx", "from", peer.Addr, "txHash", hash)
+		n.logger.Infow("received tx", "from", peer.Addr, "txHash", hash, "we", n.listenAddr)
 		go func() {
 			if err := n.broadcast(tx); err != nil {
 				n.logger.Errorw("broadcast error", "error", err)
