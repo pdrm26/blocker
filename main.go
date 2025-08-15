@@ -18,10 +18,10 @@ func main() {
 	time.Sleep(time.Second)
 	makeNode(":5000", []string{":4000"})
 
-	time.Sleep(time.Second)
-	makeTx()
-
-	select {}
+	for {
+		time.Sleep(time.Second)
+		makeTx()
+	}
 }
 
 func makeNode(listenAddr string, bootstrapNodes []string) *node.Node {
@@ -57,6 +57,4 @@ func makeTx() {
 	if err != nil {
 		log.Fatal("HandleTransaction failed:", err)
 	}
-
-	log.Println("Transaction sent successfully")
 }
