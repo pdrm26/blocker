@@ -2,11 +2,12 @@ package node
 
 import (
 	"context"
-	"fmt"
+	"encoding/hex"
 	"net"
 	"sync"
 
 	"github.com/pdrm26/blocker/proto"
+	"github.com/pdrm26/blocker/types"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -157,12 +158,14 @@ func (n *Node) Handshake(ctx context.Context, incomingPeerInfo *proto.PeerInfo) 
 }
 
 func (n *Node) HandleTransaction(ctx context.Context, tx *proto.Transaction) (*emptypb.Empty, error) {
-	remotePeer, ok := peer.FromContext(ctx)
+	peer, ok := peer.FromContext(ctx)
 	if !ok {
-		fmt.Println("Peer not found in context")
+		panic("Peer not found in context")
 	}
 
-	n.logger.Infof("Received tx from %+v :: incomingTx: %+v\n", remotePeer, tx)
+	hash := hex.EncodeToString(types.HashTransaction(tx))
+	n.logger.Infow("received tx", "from", peer.Addr, "txHash", hash)
+
 	return &emptypb.Empty{}, nil
 }
 
