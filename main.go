@@ -5,8 +5,10 @@ import (
 	"log"
 	"time"
 
+	"github.com/pdrm26/blocker/crypto"
 	"github.com/pdrm26/blocker/node"
 	"github.com/pdrm26/blocker/proto"
+	"github.com/pdrm26/blocker/utils"
 )
 
 func main() {
@@ -15,6 +17,9 @@ func main() {
 	makeNode(":4000", []string{":3000"})
 	time.Sleep(time.Second)
 	makeNode(":5000", []string{":4000"})
+
+	time.Sleep(time.Second)
+	makeTx()
 
 	select {}
 }
@@ -30,12 +35,25 @@ func makeTx() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	client.Handshake(
-		context.TODO(),
-		//TODO: ListenAddr is incorrect i think because at the end it goes to targetAddr!!! check it later
-		&proto.PeerInfo{ProtocolVersion: 1, BlockHeight: 10, ListenAddr: ":4000"},
-	)
-	_, err = client.HandleTransaction(context.TODO(), &proto.Transaction{})
+
+	privKey := crypto.NewPrivateKey()
+	tx := &proto.Transaction{
+		Version: 1,
+		Inputs: []*proto.TxInput{
+			{
+				PrevTxHash:   utils.RandomHash(),
+				PrevOutIndex: 0,
+				PublicKey:    privKey.Public().Bytes(),
+			},
+		},
+		Outputs: []*proto.TxOutput{
+			{
+				Amount:  99,
+				Address: privKey.Public().Address().Bytes(),
+			},
+		},
+	}
+	_, err = client.HandleTransaction(context.TODO(), tx)
 	if err != nil {
 		log.Fatal("HandleTransaction failed:", err)
 	}
