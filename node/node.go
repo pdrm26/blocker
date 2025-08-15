@@ -245,7 +245,7 @@ func (n *Node) validatorLoop() {
 
 	for {
 		<-ticker.C
-		n.logger.Info("time to create a new block")
+		n.logger.Infow("time to create a new block", "txLen", len(n.mempool.txx))
 	}
 
 }
