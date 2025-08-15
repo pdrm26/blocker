@@ -72,6 +72,8 @@ func (n *Node) bootstrapNetwork(addrs []string) error {
 		if !n.canConnectWith(addr) {
 			continue
 		}
+		n.logger.Debugw("dialing remote node", "we", n.listenAddr, "remote", addr)
+
 		client, peer, err := n.dialRemoteNode(addr)
 		if err != nil {
 			return err
