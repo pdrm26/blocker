@@ -15,6 +15,30 @@ import (
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
+type Mempool struct {
+	txx map[string]*proto.Transaction
+}
+
+func NewMempool() *Mempool {
+	return &Mempool{
+		txx: make(map[string]*proto.Transaction),
+	}
+}
+
+func (pool *Mempool) Has(tx *proto.Transaction) bool {
+	hash := hex.EncodeToString(types.HashTransaction(tx))
+	_, ok := pool.txx[hash]
+	return ok
+}
+func (pool *Mempool) Add(tx *proto.Transaction) bool {
+	if pool.Has(tx) {
+		return false
+	}
+	hash := hex.EncodeToString(types.HashTransaction(tx))
+	pool.txx[hash] = tx
+	return true
+}
+
 type Node struct {
 	version    int32
 	listenAddr string
@@ -22,6 +46,7 @@ type Node struct {
 
 	peerLock sync.RWMutex
 	peers    map[proto.NodeClient]*proto.PeerInfo
+	mempool  *Mempool
 
 	proto.UnimplementedNodeServer
 }
@@ -32,6 +57,7 @@ func NewNode() *Node {
 		peers:   make(map[proto.NodeClient]*proto.PeerInfo),
 		version: 531,
 		logger:  logger.Sugar(),
+		mempool: NewMempool(),
 	}
 }
 
@@ -163,8 +189,15 @@ func (n *Node) HandleTransaction(ctx context.Context, tx *proto.Transaction) (*e
 		panic("Peer not found in context")
 	}
 
-	hash := hex.EncodeToString(types.HashTransaction(tx))
-	n.logger.Infow("received tx", "from", peer.Addr, "txHash", hash)
+	if n.mempool.Add(tx) {
+		hash := hex.EncodeToString(types.HashTransaction(tx))
+		n.logger.Infow("received tx", "from", peer.Addr, "txHash", hash)
+		go func() {
+			if err := n.broadcast(tx); err != nil {
+				n.logger.Errorw("broadcast error", "error", err)
+			}
+		}()
+	}
 
 	return &emptypb.Empty{}, nil
 }
@@ -176,4 +209,18 @@ func MakeNodeClient(targetAddr string) (proto.NodeClient, error) {
 	}
 
 	return proto.NewNodeClient(conn), nil
+}
+
+func (n *Node) broadcast(msg any) error {
+	for peer := range n.peers {
+		switch v := msg.(type) {
+		case *proto.Transaction:
+			_, err := peer.HandleTransaction(context.Background(), v)
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	return nil
 }
