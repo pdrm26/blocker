@@ -30,6 +30,28 @@ func NewMempool() *Mempool {
 	}
 }
 
+func (pool *Mempool) Clear() []*proto.Transaction {
+	pool.lock.Lock()
+	defer pool.lock.Unlock()
+
+	txs := make([]*proto.Transaction, len(pool.txx))
+	it := 0
+	for k, v := range pool.txx {
+		delete(pool.txx, k)
+		txs[it] = v
+		it++
+	}
+
+	return txs
+}
+
+func (pool *Mempool) Len() int {
+	pool.lock.RLock()
+	defer pool.lock.RUnlock()
+
+	return len(pool.txx)
+}
+
 func (pool *Mempool) Has(tx *proto.Transaction) bool {
 	pool.lock.RLock()
 	defer pool.lock.RUnlock()
