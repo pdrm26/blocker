@@ -20,7 +20,8 @@ import (
 const blockTime = time.Second * 5
 
 type Mempool struct {
-	txx map[string]*proto.Transaction
+	lock sync.RWMutex
+	txx  map[string]*proto.Transaction
 }
 
 func NewMempool() *Mempool {
@@ -30,6 +31,9 @@ func NewMempool() *Mempool {
 }
 
 func (pool *Mempool) Has(tx *proto.Transaction) bool {
+	pool.lock.RLock()
+	defer pool.lock.RUnlock()
+
 	hash := hex.EncodeToString(types.HashTransaction(tx))
 	_, ok := pool.txx[hash]
 	return ok
@@ -38,6 +42,10 @@ func (pool *Mempool) Add(tx *proto.Transaction) bool {
 	if pool.Has(tx) {
 		return false
 	}
+
+	pool.lock.Lock()
+	defer pool.lock.Unlock()
+
 	hash := hex.EncodeToString(types.HashTransaction(tx))
 	pool.txx[hash] = tx
 	return true
