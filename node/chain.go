@@ -95,6 +95,7 @@ func (c *Chain) createGenesisBlock() *proto.Block {
 
 	return block
 }
+
 func (c *Chain) ValidateBlock(b *proto.Block) error {
 	currentBlock, err := c.GetBlockByHeight(c.Height())
 	if err != nil {
