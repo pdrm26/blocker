@@ -24,5 +24,8 @@ func HashHeader(header *proto.Header) []byte {
 }
 
 func SignBlock(privKey *crypto.PrivateKey, block *proto.Block) *crypto.Signature {
-	return privKey.Sign(HashBlock(block))
+	sig := privKey.Sign(HashBlock(block))
+	block.PublicKey = privKey.Public().Bytes()
+	block.Signature = sig.Bytes()
+	return sig
 }

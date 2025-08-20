@@ -170,6 +170,8 @@ type Block struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Header        *Header                `protobuf:"bytes,1,opt,name=header,proto3" json:"header,omitempty"`
 	Transactions  []*Transaction         `protobuf:"bytes,2,rep,name=transactions,proto3" json:"transactions,omitempty"`
+	PublicKey     []byte                 `protobuf:"bytes,3,opt,name=publicKey,proto3" json:"publicKey,omitempty"`
+	Signature     []byte                 `protobuf:"bytes,4,opt,name=signature,proto3" json:"signature,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -214,6 +216,20 @@ func (x *Block) GetHeader() *Header {
 func (x *Block) GetTransactions() []*Transaction {
 	if x != nil {
 		return x.Transactions
+	}
+	return nil
+}
+
+func (x *Block) GetPublicKey() []byte {
+	if x != nil {
+		return x.PublicKey
+	}
+	return nil
+}
+
+func (x *Block) GetSignature() []byte {
+	if x != nil {
+		return x.Signature
 	}
 	return nil
 }
@@ -415,10 +431,12 @@ const file_proto_block_proto_rawDesc = "" +
 	"\x06height\x18\x02 \x01(\x05R\x06height\x12\x1a\n" +
 	"\bprevHash\x18\x03 \x01(\fR\bprevHash\x12\x1a\n" +
 	"\brootHash\x18\x04 \x01(\fR\brootHash\x12\x1c\n" +
-	"\ttimestamp\x18\x05 \x01(\x03R\ttimestamp\"Z\n" +
+	"\ttimestamp\x18\x05 \x01(\x03R\ttimestamp\"\x96\x01\n" +
 	"\x05Block\x12\x1f\n" +
 	"\x06header\x18\x01 \x01(\v2\a.HeaderR\x06header\x120\n" +
-	"\ftransactions\x18\x02 \x03(\v2\f.TransactionR\ftransactions\"\x89\x01\n" +
+	"\ftransactions\x18\x02 \x03(\v2\f.TransactionR\ftransactions\x12\x1c\n" +
+	"\tpublicKey\x18\x03 \x01(\fR\tpublicKey\x12\x1c\n" +
+	"\tsignature\x18\x04 \x01(\fR\tsignature\"\x89\x01\n" +
 	"\aTxInput\x12\x1e\n" +
 	"\n" +
 	"prevTxHash\x18\x01 \x01(\fR\n" +
