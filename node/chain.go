@@ -4,6 +4,7 @@ import (
 	"encoding/hex"
 	"fmt"
 
+	"github.com/pdrm26/blocker/crypto"
 	"github.com/pdrm26/blocker/proto"
 	"github.com/pdrm26/blocker/types"
 )
@@ -43,10 +44,12 @@ type Chain struct {
 }
 
 func NewChain(bs BlockStorer) *Chain {
-	return &Chain{
+	chain := &Chain{
 		blockStore: bs,
 		headers:    NewHeaderList(),
 	}
+	chain.addBlock(chain.createGenesisBlock())
+	return chain
 }
 
 func (c *Chain) Height() int {
@@ -54,6 +57,10 @@ func (c *Chain) Height() int {
 }
 
 func (c *Chain) AddBlock(block *proto.Block) error {
+	return c.addBlock(block)
+}
+
+func (c *Chain) addBlock(block *proto.Block) error {
 	c.headers.Add(block.Header)
 	return c.blockStore.Put(block)
 }
@@ -71,4 +78,16 @@ func (c *Chain) GetBlockByHeight(height int) (*proto.Block, error) {
 	header := c.headers.Get(height)
 	headerHash := types.HashHeader(header)
 	return c.GetBlockByHash(headerHash)
+}
+
+func (c *Chain) createGenesisBlock() *proto.Block {
+	privKey := crypto.NewPrivateKey()
+	block := &proto.Block{
+		Header: &proto.Header{
+			Version: 1,
+		},
+	}
+	types.SignBlock(privKey, block)
+
+	return block
 }
