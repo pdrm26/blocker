@@ -1,6 +1,7 @@
 package node
 
 import (
+	"bytes"
 	"encoding/hex"
 	"fmt"
 
@@ -57,6 +58,9 @@ func (c *Chain) Height() int {
 }
 
 func (c *Chain) AddBlock(block *proto.Block) error {
+	if err := c.ValidateBlock(block); err != nil {
+		return err
+	}
 	return c.addBlock(block)
 }
 
@@ -90,4 +94,16 @@ func (c *Chain) createGenesisBlock() *proto.Block {
 	types.SignBlock(privKey, block)
 
 	return block
+}
+func (c *Chain) ValidateBlock(b *proto.Block) error {
+	currentBlock, err := c.GetBlockByHeight(c.Height())
+	if err != nil {
+		return err
+	}
+
+	hash := types.HashBlock(currentBlock)
+	if !bytes.Equal(hash, b.Header.PrevHash) {
+		return fmt.Errorf("invalid previous hash block")
+	}
+	return nil
 }
