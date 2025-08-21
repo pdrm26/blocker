@@ -13,6 +13,9 @@ func TestAddBlock(t *testing.T) {
 
 	for i := 0; i < 100; i++ {
 		block := utils.RandomBlock()
+		prevBlock, err := chain.GetBlockByHeight(chain.Height())
+		assert.Nil(t, err)
+		block.Header.PrevHash = types.HashBlock(prevBlock)
 		blockHash := types.HashBlock(block)
 
 		assert.Nil(t, chain.AddBlock(block))
@@ -21,7 +24,7 @@ func TestAddBlock(t *testing.T) {
 		assert.Nil(t, err)
 		assert.Equal(t, fetchedBlockByHash, block)
 
-		fetchedBlockByHeight, err := chain.GetBlockByHeight(i)
+		fetchedBlockByHeight, err := chain.GetBlockByHeight(i + 1)
 		assert.Nil(t, err)
 		assert.Equal(t, fetchedBlockByHeight, block)
 	}
@@ -37,7 +40,7 @@ func TestChainHeight(t *testing.T) {
 		assert.Nil(t, err)
 		block.Header.PrevHash = types.HashBlock(prevBlock)
 		assert.Nil(t, chain.AddBlock(block))
-		assert.Equal(t, chain.Height(), i + 1)
+		assert.Equal(t, chain.Height(), i+1)
 	}
 }
 
