@@ -33,8 +33,11 @@ func TestChainHeight(t *testing.T) {
 
 	for i := 0; i < 100; i++ {
 		block := utils.RandomBlock()
+		prevBlock, err := chain.GetBlockByHeight(chain.Height())
+		assert.Nil(t, err)
+		block.Header.PrevHash = types.HashBlock(prevBlock)
 		assert.Nil(t, chain.AddBlock(block))
-		assert.Equal(t, chain.Height(), i)
+		assert.Equal(t, chain.Height(), i + 1)
 	}
 }
 
