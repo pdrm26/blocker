@@ -8,6 +8,12 @@ import (
 	"github.com/pdrm26/blocker/proto"
 )
 
+func VerifyBlock(block *proto.Block) bool {
+	sig := crypto.SignatureFromBytes(block.Signature)
+	pubKey := crypto.PublicKeyFromBytes(block.PublicKey)
+	return sig.Verify(pubKey, HashBlock(block))
+}
+
 // HashBlock returns a SHA256 of the block header.
 func HashBlock(block *proto.Block) []byte {
 	return HashHeader(block.Header)

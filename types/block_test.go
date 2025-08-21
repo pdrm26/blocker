@@ -16,7 +16,7 @@ func TestHashBlock(t *testing.T) {
 
 }
 
-func TestSignBlock(t *testing.T) {
+func TestSignVerifyBlock(t *testing.T) {
 	var (
 		privKey = crypto.NewPrivateKey()
 		pubKey  = privKey.Public()
@@ -29,4 +29,10 @@ func TestSignBlock(t *testing.T) {
 	assert.Equal(t, block.Signature, sig.Bytes())
 	assert.Equal(t, len(sig.Bytes()), 64)
 	assert.True(t, sig.Verify(pubKey, HashBlock(block)))
+
+	assert.True(t, VerifyBlock(block))
+
+	invalidPrivKey := crypto.NewPrivateKey()
+	block.PublicKey = invalidPrivKey.Public().Bytes()
+	assert.False(t, VerifyBlock(block))
 }
