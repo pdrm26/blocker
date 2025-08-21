@@ -17,12 +17,16 @@ func TestHashBlock(t *testing.T) {
 }
 
 func TestSignBlock(t *testing.T) {
-	privKey := crypto.NewPrivateKey()
-	pubKey := privKey.Public()
+	var (
+		privKey = crypto.NewPrivateKey()
+		pubKey  = privKey.Public()
+		block   = utils.RandomBlock()
+	)
 
-	block := utils.RandomBlock()
 	sig := SignBlock(privKey, block)
 
+	assert.Equal(t, block.PublicKey, pubKey.Bytes())
+	assert.Equal(t, block.Signature, sig.Bytes())
 	assert.Equal(t, len(sig.Bytes()), 64)
 	assert.True(t, sig.Verify(pubKey, HashBlock(block)))
 }
