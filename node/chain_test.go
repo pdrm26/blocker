@@ -37,3 +37,10 @@ func TestChainHeight(t *testing.T) {
 		assert.Equal(t, chain.Height(), i)
 	}
 }
+
+func TestNewChain(t *testing.T) {
+	chain := NewChain(NewMemoryBlockStore())
+	assert.Equal(t, 0, chain.Height())
+	_, err := chain.GetBlockByHeight(0)
+	assert.Nil(t, err)
+}
