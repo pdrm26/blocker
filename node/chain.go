@@ -97,6 +97,10 @@ func (c *Chain) createGenesisBlock() *proto.Block {
 }
 
 func (c *Chain) ValidateBlock(b *proto.Block) error {
+	if !types.VerifyBlock(b) {
+		return fmt.Errorf("invalid block signature")
+	}
+
 	currentBlock, err := c.GetBlockByHeight(c.Height())
 	if err != nil {
 		return err

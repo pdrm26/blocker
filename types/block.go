@@ -9,6 +9,12 @@ import (
 )
 
 func VerifyBlock(block *proto.Block) bool {
+	if len(block.PublicKey) != crypto.PublicKeySize {
+		return false
+	}
+	if len(block.Signature) != crypto.SignatureLen {
+		return false
+	}
 	sig := crypto.SignatureFromBytes(block.Signature)
 	pubKey := crypto.PublicKeyFromBytes(block.PublicKey)
 	return sig.Verify(pubKey, HashBlock(block))

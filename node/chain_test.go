@@ -3,19 +3,29 @@ package node
 import (
 	"testing"
 
+	"github.com/pdrm26/blocker/crypto"
+	"github.com/pdrm26/blocker/proto"
 	"github.com/pdrm26/blocker/types"
 	"github.com/pdrm26/blocker/utils"
 	"github.com/stretchr/testify/assert"
 )
 
+func randomBlock(t *testing.T, chain *Chain) *proto.Block {
+	privKey := crypto.NewPrivateKey()
+	block := utils.RandomBlock()
+	prevBlock, err := chain.GetBlockByHeight(chain.Height())
+	assert.Nil(t, err)
+	block.Header.PrevHash = types.HashBlock(prevBlock)
+	types.SignBlock(privKey, block)
+
+	return block
+}
+
 func TestAddBlock(t *testing.T) {
 	chain := NewChain(NewMemoryBlockStore())
 
 	for i := 0; i < 100; i++ {
-		block := utils.RandomBlock()
-		prevBlock, err := chain.GetBlockByHeight(chain.Height())
-		assert.Nil(t, err)
-		block.Header.PrevHash = types.HashBlock(prevBlock)
+		block := randomBlock(t, chain)
 		blockHash := types.HashBlock(block)
 
 		assert.Nil(t, chain.AddBlock(block))
@@ -35,10 +45,7 @@ func TestChainHeight(t *testing.T) {
 	chain := NewChain(NewMemoryBlockStore())
 
 	for i := 0; i < 100; i++ {
-		block := utils.RandomBlock()
-		prevBlock, err := chain.GetBlockByHeight(chain.Height())
-		assert.Nil(t, err)
-		block.Header.PrevHash = types.HashBlock(prevBlock)
+		block := randomBlock(t, chain)
 		assert.Nil(t, chain.AddBlock(block))
 		assert.Equal(t, chain.Height(), i+1)
 	}
