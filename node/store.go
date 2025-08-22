@@ -9,6 +9,46 @@ import (
 	"github.com/pdrm26/blocker/types"
 )
 
+type TXHash = string
+type TXStorer interface {
+	Put(*proto.Transaction) error
+	Get(TXHash) (*proto.Transaction, error)
+}
+
+type MemoryTXStore struct {
+	lock sync.RWMutex
+	txx  map[TXHash]*proto.Transaction
+}
+
+func NewMemoryTXStore() *MemoryTXStore {
+	return &MemoryTXStore{
+		txx: make(map[TXHash]*proto.Transaction),
+	}
+}
+
+func (s *MemoryTXStore) Put(tx *proto.Transaction) error {
+	s.lock.Lock()
+	defer s.lock.Unlock()
+
+	hash := hex.EncodeToString(types.HashTransaction(tx))
+
+	s.txx[hash] = tx
+	return nil
+}
+
+func (s *MemoryTXStore) Get(txHash TXHash) (*proto.Transaction, error) {
+	s.lock.RLock()
+	defer s.lock.Unlock()
+
+	tx, ok := s.txx[txHash]
+	if !ok {
+		return nil, fmt.Errorf("could not find a tx with txHash: %s", txHash)
+	}
+
+	return tx, nil
+
+}
+
 type BlockStorer interface {
 	Put(*proto.Block) error
 	Get(string) (*proto.Block, error)
