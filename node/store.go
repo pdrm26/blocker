@@ -49,9 +49,10 @@ func (s *MemoryTXStore) Get(txHash TXHash) (*proto.Transaction, error) {
 
 }
 
+type BlockHash = string
 type BlockStorer interface {
 	Put(*proto.Block) error
-	Get(string) (*proto.Block, error)
+	Get(BlockHash) (*proto.Block, error)
 }
 
 type MemoryBlockStore struct {
@@ -74,7 +75,7 @@ func (s *MemoryBlockStore) Put(block *proto.Block) error {
 	return nil
 }
 
-func (s *MemoryBlockStore) Get(hash string) (*proto.Block, error) {
+func (s *MemoryBlockStore) Get(hash BlockHash) (*proto.Block, error) {
 	s.lock.RLock()
 	defer s.lock.RUnlock()
 
