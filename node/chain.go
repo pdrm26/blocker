@@ -40,13 +40,15 @@ func (h *HeaderList) Height() int {
 }
 
 type Chain struct {
+	txStore    TXStorer
 	blockStore BlockStorer
 	headers    *HeaderList
 }
 
-func NewChain(bs BlockStorer) *Chain {
+func NewChain(blockStore BlockStorer, txStore TXStorer) *Chain {
 	chain := &Chain{
-		blockStore: bs,
+		blockStore: blockStore,
+		txStore:    txStore,
 		headers:    NewHeaderList(),
 	}
 	chain.addBlock(chain.createGenesisBlock())

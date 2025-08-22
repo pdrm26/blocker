@@ -22,7 +22,7 @@ func randomBlock(t *testing.T, chain *Chain) *proto.Block {
 }
 
 func TestAddBlock(t *testing.T) {
-	chain := NewChain(NewMemoryBlockStore())
+	chain := NewChain(NewMemoryBlockStore(), NewMemoryTXStore())
 
 	for i := 0; i < 100; i++ {
 		block := randomBlock(t, chain)
@@ -42,7 +42,7 @@ func TestAddBlock(t *testing.T) {
 }
 
 func TestChainHeight(t *testing.T) {
-	chain := NewChain(NewMemoryBlockStore())
+	chain := NewChain(NewMemoryBlockStore(), NewMemoryTXStore())
 
 	for i := 0; i < 100; i++ {
 		block := randomBlock(t, chain)
@@ -52,7 +52,7 @@ func TestChainHeight(t *testing.T) {
 }
 
 func TestNewChain(t *testing.T) {
-	chain := NewChain(NewMemoryBlockStore())
+	chain := NewChain(NewMemoryBlockStore(), NewMemoryTXStore())
 	assert.Equal(t, 0, chain.Height())
 	_, err := chain.GetBlockByHeight(0)
 	assert.Nil(t, err)
