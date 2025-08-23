@@ -38,7 +38,7 @@ func (s *MemoryTXStore) Put(tx *proto.Transaction) error {
 
 func (s *MemoryTXStore) Get(txHash TXHash) (*proto.Transaction, error) {
 	s.lock.RLock()
-	defer s.lock.Unlock()
+	defer s.lock.RUnlock()
 
 	tx, ok := s.txx[txHash]
 	if !ok {
