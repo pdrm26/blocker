@@ -1,6 +1,7 @@
 package node
 
 import (
+	"encoding/hex"
 	"testing"
 
 	"github.com/pdrm26/blocker/crypto"
@@ -56,4 +57,37 @@ func TestNewChain(t *testing.T) {
 	assert.Equal(t, 0, chain.Height())
 	_, err := chain.GetBlockByHeight(0)
 	assert.Nil(t, err)
+}
+
+func TestAddBlockWithTX(t *testing.T) {
+	var (
+		chain     = NewChain(NewMemoryBlockStore(), NewMemoryTXStore())
+		block     = randomBlock(t, chain)
+		privKey   = crypto.NewPrivateKey()
+		recipient = crypto.NewPrivateKey().Public().Address()
+	)
+
+	inputs := []*proto.TxInput{
+		{
+			PublicKey: privKey.Public().Bytes(),
+		},
+	}
+	outputs := []*proto.TxOutput{
+		{
+			Amount:  99,
+			Address: recipient.Bytes(),
+		},
+	}
+
+	tx := &proto.Transaction{Version: 1, Inputs: inputs, Outputs: outputs}
+	block.Transactions = append(block.Transactions, tx)
+
+	assert.Nil(t, chain.AddBlock(block))
+
+	txHash := hex.EncodeToString(types.HashTransaction(tx))
+	fetchedTx, err := chain.txStore.Get(txHash)
+
+	assert.Equal(t, tx, fetchedTx)
+	assert.Nil(t, err)
+
 }
