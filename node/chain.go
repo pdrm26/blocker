@@ -68,6 +68,13 @@ func (c *Chain) AddBlock(block *proto.Block) error {
 
 func (c *Chain) addBlock(block *proto.Block) error {
 	c.headers.Add(block.Header)
+
+	for _, tx := range block.Transactions {
+		if err := c.txStore.Put(tx); err != nil {
+			return err
+		}
+	}
+
 	return c.blockStore.Put(block)
 }
 
