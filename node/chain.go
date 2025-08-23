@@ -72,6 +72,8 @@ func (c *Chain) addBlock(block *proto.Block) error {
 	c.headers.Add(block.Header)
 
 	for _, tx := range block.Transactions {
+		// for getting the hash of the genesis transaction and use it in the tests like: TestAddBlockWithTX
+		// fmt.Println("NEW TX:", hex.EncodeToString(types.HashTransaction(tx)))
 		if err := c.txStore.Put(tx); err != nil {
 			return err
 		}

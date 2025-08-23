@@ -63,19 +63,28 @@ func TestAddBlockWithTX(t *testing.T) {
 	var (
 		chain     = NewChain(NewMemoryBlockStore(), NewMemoryTXStore())
 		block     = randomBlock(t, chain)
-		privKey   = crypto.NewPrivateKey()
+		privKey   = crypto.NewPrivateKeyFromString(seed)
 		recipient = crypto.NewPrivateKey().Public().Address()
 	)
 
+	genesisTX, err := chain.txStore.Get("10d9f0e9d2be769fa4620206a41718c2569c91bc56073b435975413d631603a5")
+	assert.Nil(t, err)
+
 	inputs := []*proto.TxInput{
 		{
-			PublicKey: privKey.Public().Bytes(),
+			PrevTxHash:   types.HashTransaction(genesisTX),
+			PrevOutIndex: 0,
+			PublicKey:    privKey.Public().Bytes(),
 		},
 	}
 	outputs := []*proto.TxOutput{
 		{
-			Amount:  99,
+			Amount:  100,
 			Address: recipient.Bytes(),
+		},
+		{
+			Amount:  900,
+			Address: privKey.Public().Address().Bytes(),
 		},
 	}
 
