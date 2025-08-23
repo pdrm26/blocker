@@ -10,6 +10,8 @@ import (
 	"github.com/pdrm26/blocker/types"
 )
 
+const seed = "68c21e93b509d6de263c61b9754f9285fd8c3709e579f5baf4a83d874164c937"
+
 type HeaderList struct {
 	headers []*proto.Header
 }
@@ -94,12 +96,25 @@ func (c *Chain) GetBlockByHeight(height int) (*proto.Block, error) {
 }
 
 func (c *Chain) createGenesisBlock() *proto.Block {
-	privKey := crypto.NewPrivateKey()
+	privKey := crypto.NewPrivateKeyFromString(seed)
+
 	block := &proto.Block{
 		Header: &proto.Header{
 			Version: 1,
 		},
 	}
+	tx := &proto.Transaction{
+		Version: 1,
+		Inputs:  []*proto.TxInput{},
+		Outputs: []*proto.TxOutput{
+			{
+				Amount:  1000,
+				Address: privKey.Public().Address().Bytes(),
+			},
+		},
+	}
+
+	block.Transactions = append(block.Transactions, tx)
 	types.SignBlock(privKey, block)
 
 	return block
