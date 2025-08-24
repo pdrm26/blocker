@@ -46,7 +46,41 @@ func (s *MemoryTXStore) Get(txHash TXHash) (*proto.Transaction, error) {
 	}
 
 	return tx, nil
+}
 
+type UTXOStorer interface {
+	Put(*UTXO) error
+	Get(BlockHash) (*UTXO, error)
+}
+type MemoryUTXOStore struct {
+	lock   sync.RWMutex
+	blocks map[string]*UTXO
+}
+
+func NewMemoryUTXOStore() *MemoryUTXOStore {
+	return &MemoryUTXOStore{
+		blocks: make(map[string]*UTXO),
+	}
+}
+
+func (s *MemoryUTXOStore) Put(utxo *UTXO) error {
+	s.lock.Lock()
+	defer s.lock.Unlock()
+
+	s.blocks[utxo.Hash] = utxo
+	return nil
+}
+
+func (s *MemoryUTXOStore) Get(hash BlockHash) (*UTXO, error) {
+	s.lock.RLock()
+	defer s.lock.RUnlock()
+
+	utxo, ok := s.blocks[hash]
+	if !ok {
+		return nil, fmt.Errorf("UTXO with hash [%s] does not exist", hash)
+	}
+
+	return utxo, nil
 }
 
 type BlockHash = string
