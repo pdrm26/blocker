@@ -12,7 +12,7 @@ const (
 	SignatureLen   = 64
 	PublicKeySize  = 32
 	SeedLen        = 32
-	AddressSize    = 20
+	AddressLen     = 20
 )
 
 type PrivateKey struct {
@@ -88,7 +88,7 @@ func (k *PublicKey) Verify(rawMsg, sig []byte) bool {
 
 func (k *PublicKey) Address() Address {
 	return Address{
-		value: k.key[PublicKeySize-AddressSize:],
+		value: k.key[PublicKeySize-AddressLen:],
 	}
 }
 
@@ -124,4 +124,14 @@ func (s Address) Bytes() []byte {
 
 func (s Address) String() string {
 	return hex.EncodeToString(s.value)
+}
+
+func AddressFromBytes(b []byte) *Address {
+	if len(b) != AddressLen {
+		panic("length of the bytes not equal to 20")
+	}
+
+	return &Address{
+		value: b,
+	}
 }
