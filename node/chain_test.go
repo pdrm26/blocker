@@ -2,6 +2,7 @@ package node
 
 import (
 	"encoding/hex"
+	"fmt"
 	"testing"
 
 	"github.com/pdrm26/blocker/crypto"
@@ -101,5 +102,11 @@ func TestAddBlockWithTX(t *testing.T) {
 
 	assert.Equal(t, tx, fetchedTx)
 	assert.Nil(t, err)
+
+	address := crypto.AddressFromBytes(outputs[1].Address)
+	key := fmt.Sprintf("%s_%s", address, txHash)
+	utxo, err := chain.utxoStore.Get(key)
+	assert.Nil(t, err)
+	fmt.Println(utxo)
 
 }
