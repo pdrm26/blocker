@@ -89,6 +89,9 @@ func TestAddBlockWithTX(t *testing.T) {
 	}
 
 	tx := &proto.Transaction{Version: 1, Inputs: inputs, Outputs: outputs}
+	txSig := types.SignTransaction(tx, privKey)
+	tx.Inputs[0].Signature = txSig.Bytes()
+
 	block.Transactions = append(block.Transactions, tx)
 
 	assert.Nil(t, chain.AddBlock(block))

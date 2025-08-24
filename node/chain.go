@@ -136,5 +136,12 @@ func (c *Chain) ValidateBlock(b *proto.Block) error {
 	if !bytes.Equal(hash, b.Header.PrevHash) {
 		return fmt.Errorf("invalid previous hash block")
 	}
+
+	for _, tx := range b.Transactions {
+		if !types.VerifyTransaction(tx) {
+			return fmt.Errorf("invalid tx signature")
+		}
+	}
+
 	return nil
 }

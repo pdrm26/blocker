@@ -24,6 +24,10 @@ func SignTransaction(tx *proto.Transaction, privKey *crypto.PrivateKey) *crypto.
 
 func VerifyTransaction(tx *proto.Transaction) bool {
 	for _, input := range tx.Inputs {
+		if len(input.Signature) == 0 {
+			panic("transaction has no signature")
+		}
+
 		pubKey := crypto.PublicKeyFromBytes(input.PublicKey)
 		sig := crypto.SignatureFromBytes(input.Signature)
 
