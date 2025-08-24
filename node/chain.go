@@ -15,6 +15,12 @@ const seed = "68c21e93b509d6de263c61b9754f9285fd8c3709e579f5baf4a83d874164c937"
 type HeaderList struct {
 	headers []*proto.Header
 }
+type UTXO struct {
+	Hash     string
+	OutIndex int
+	Amount   int64
+	Spent    bool
+}
 
 func NewHeaderList() *HeaderList {
 	return &HeaderList{
@@ -43,6 +49,7 @@ func (h *HeaderList) Height() int {
 
 type Chain struct {
 	txStore    TXStorer
+	utxoStore  UTXOStorer
 	blockStore BlockStorer
 	headers    *HeaderList
 }
