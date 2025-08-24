@@ -56,8 +56,9 @@ type Chain struct {
 
 func NewChain(blockStore BlockStorer, txStore TXStorer) *Chain {
 	chain := &Chain{
-		blockStore: blockStore,
 		txStore:    txStore,
+		utxoStore:  NewMemoryUTXOStore(),
+		blockStore: blockStore,
 		headers:    NewHeaderList(),
 	}
 	chain.addBlock(chain.createGenesisBlock())
