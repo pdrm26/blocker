@@ -85,6 +85,20 @@ func (c *Chain) addBlock(block *proto.Block) error {
 		if err := c.txStore.Put(tx); err != nil {
 			return err
 		}
+
+		hash := hex.EncodeToString(types.HashTransaction(tx))
+		for index, output := range tx.Outputs {
+			utxo := &UTXO{
+				Hash:     hash,
+				Amount:   output.Amount,
+				OutIndex: index,
+				Spent:    false,
+			}
+
+			if err := c.utxoStore.Put(utxo); err != nil {
+				return err
+			}
+		}
 	}
 
 	return c.blockStore.Put(block)
