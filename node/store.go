@@ -50,7 +50,7 @@ func (s *MemoryTXStore) Get(txHash TXHash) (*proto.Transaction, error) {
 
 type UTXOStorer interface {
 	Put(*UTXO) error
-	Get(BlockHash) (*UTXO, error)
+	Get(TXHash) (*UTXO, error)
 }
 type MemoryUTXOStore struct {
 	lock   sync.RWMutex
