@@ -159,8 +159,29 @@ func (c *Chain) ValidateBlock(b *proto.Block) error {
 	}
 
 	for _, tx := range b.Transactions {
-		if !types.VerifyTransaction(tx) {
-			return fmt.Errorf("invalid tx signature")
+		if err := c.ValidateTransaction(tx); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (c *Chain) ValidateTransaction(tx *proto.Transaction) error {
+	if !types.VerifyTransaction(tx) {
+		return fmt.Errorf("invalid tx signature")
+	}
+
+	for outputIndex := range len(tx.Inputs) {
+		prevHash := hex.EncodeToString(tx.Inputs[outputIndex].PrevTxHash)
+		key := fmt.Sprintf("%s_%d", prevHash, outputIndex)
+		utxo, err := c.utxoStore.Get(key)
+		if err != nil {
+			return err
+		}
+
+		if utxo.Spent {
+			return fmt.Errorf("input %d of tx %s is already spent", outputIndex, prevHash)
 		}
 	}
 
