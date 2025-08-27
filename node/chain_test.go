@@ -92,6 +92,38 @@ func TestAddBlockWithTX(t *testing.T) {
 	tx.Inputs[0].Signature = txSig.Bytes()
 
 	block.Transactions = append(block.Transactions, tx)
-
 	assert.Nil(t, chain.AddBlock(block))
+}
+
+func TestAddBlockWithInsufficientPaymentTX(t *testing.T) {
+	var (
+		chain     = NewChain(NewMemoryBlockStore(), NewMemoryTXStore())
+		block     = randomBlock(t, chain)
+		privKey   = crypto.NewPrivateKeyFromString(seed)
+		recepient = crypto.NewPrivateKey().Public().Address()
+	)
+
+	genesisTX, err := chain.txStore.Get("10d9f0e9d2be769fa4620206a41718c2569c91bc56073b435975413d631603a5")
+	assert.Nil(t, err)
+
+	inputs := []*proto.TxInput{
+		{
+			PrevTxHash:   types.HashTransaction(genesisTX),
+			PrevOutIndex: 0,
+			PublicKey:    privKey.Public().Bytes(),
+		},
+	}
+	outputs := []*proto.TxOutput{
+		{
+			Address: recepient.Bytes(),
+			Amount:  1001,
+		},
+	}
+
+	tx := &proto.Transaction{Version: 1, Inputs: inputs, Outputs: outputs}
+	txSig := types.SignTransaction(tx, privKey)
+	tx.Inputs[0].Signature = txSig.Bytes()
+
+	block.Transactions = append(block.Transactions, tx)
+	assert.NotNil(t, chain.AddBlock(block))
 }

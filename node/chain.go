@@ -172,6 +172,7 @@ func (c *Chain) ValidateTransaction(tx *proto.Transaction) error {
 		return fmt.Errorf("invalid tx signature")
 	}
 
+	sumIns := 0
 	for outputIndex := range len(tx.Inputs) {
 		prevHash := hex.EncodeToString(tx.Inputs[outputIndex].PrevTxHash)
 		key := fmt.Sprintf("%s_%d", prevHash, outputIndex)
@@ -180,9 +181,19 @@ func (c *Chain) ValidateTransaction(tx *proto.Transaction) error {
 			return err
 		}
 
+		sumIns += int(utxo.Amount)
 		if utxo.Spent {
 			return fmt.Errorf("input %d of tx %s is already spent", outputIndex, prevHash)
 		}
+	}
+
+	sumOuts := 0
+	for _, out := range tx.Outputs {
+		sumOuts += int(out.Amount)
+	}
+
+	if sumOuts > sumIns {
+		return fmt.Errorf("insufficient balance: have (%d) spent (%d)", sumIns, sumOuts)
 	}
 
 	return nil
