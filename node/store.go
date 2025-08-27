@@ -49,7 +49,7 @@ func (s *MemoryTXStore) Get(txHash TXHash) (*proto.Transaction, error) {
 }
 
 type UTXOStorer interface {
-	Put(string, *UTXO) error
+	Put(*UTXO) error
 	Get(TXHash) (*UTXO, error)
 }
 type MemoryUTXOStore struct {
@@ -63,10 +63,11 @@ func NewMemoryUTXOStore() *MemoryUTXOStore {
 	}
 }
 
-func (s *MemoryUTXOStore) Put(key string, utxo *UTXO) error {
+func (s *MemoryUTXOStore) Put(utxo *UTXO) error {
 	s.lock.Lock()
 	defer s.lock.Unlock()
 
+	key := fmt.Sprintf("%s_%d", utxo.Hash, utxo.OutIndex)
 	s.blocks[key] = utxo
 	return nil
 }

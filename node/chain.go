@@ -94,10 +94,7 @@ func (c *Chain) addBlock(block *proto.Block) error {
 				OutIndex: index,
 				Spent:    false,
 			}
-
-			address := crypto.AddressFromBytes(output.Address)
-			key := fmt.Sprintf("%s_%s", address, hash)
-			if err := c.utxoStore.Put(key, utxo); err != nil {
+			if err := c.utxoStore.Put(utxo); err != nil {
 				return err
 			}
 		}
